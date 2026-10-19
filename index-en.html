@@ -1,0 +1,527 @@
+<title>Bucheon MBTI Travelers</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gothic+A1:wght@400;600;800&display=swap">
+<style>
+/* Layout: one-column phone app, sticky top bar, three-step flow, course rendered as a route line */
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --fg: #1d2a38;
+  --muted: #5b6b7c;
+  --line: #d9e0e8;
+  --navy: #1a3a5c;
+  --blue: #2e6da4;
+  --blue-soft: #e3edf7;
+  --orange: #c98a00;
+  --orange-soft: #fbf0d6;
+  --green: #3f7a5a;
+  --green-soft: #e2efe7;
+  --t-nt: #6b5b95; --t-nf: #3f7a5a; --t-sj: #2e6da4; --t-sp: #b5651d;
+  --font-display: "Do Hyeon", "Gothic A1", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: "Gothic A1", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1823; --surface: #172333; --fg: #e6ecf2; --muted: #9aabbc; --line: #2a3a4d;
+    --navy: #9cc3e8; --blue: #6fa6d8; --blue-soft: #1d3149; --orange: #e0b04a; --orange-soft: #33291a;
+    --green: #7fbf98; --green-soft: #1b3125;
+    --t-nt: #a898d2; --t-nf: #7fbf98; --t-sj: #6fa6d8; --t-sp: #e0a066;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1823; --surface: #172333; --fg: #e6ecf2; --muted: #9aabbc; --line: #2a3a4d;
+  --navy: #9cc3e8; --blue: #6fa6d8; --blue-soft: #1d3149; --orange: #e0b04a; --orange-soft: #33291a;
+  --green: #7fbf98; --green-soft: #1b3125;
+  --t-nt: #a898d2; --t-nf: #7fbf98; --t-sj: #6fa6d8; --t-sp: #e0a066;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--font-body); -webkit-tap-highlight-color: transparent; }
+.app { max-width: 480px; margin: 0 auto; padding-inline: 16px; padding-block: 0 96px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; margin: 0; letter-spacing: .01em; }
+button { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 12px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); margin-inline: -16px; padding-inline: 16px; }
+.brand { display: grid; gap: 4px; min-width: 0; }
+/* Crop the outer white margin of the logo (2171x724) so only the lettering shows */
+.brand .logo { display: block; width: 166px; height: 50px; overflow: hidden; border-radius: 6px; }
+.brand .logo img { display: block; width: 200px; height: auto; margin: -8px 0 0 -18px; }
+.brand small { display: block; font-size: 11.5px; font-weight: 600; color: var(--muted); letter-spacing: .02em; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand .logo { background: #fff; } }
+:root[data-theme="dark"] .brand .logo { background: #fff; }
+.tools { display: grid; justify-items: end; gap: 8px; }
+.lang { font-size: 12px; font-weight: 800; color: var(--blue); text-decoration: none; border: 1.5px solid var(--line); border-radius: 999px; padding: 3px 10px; background: var(--surface); }
+.steps { display: flex; gap: 6px; }
+.steps span { width: 26px; height: 6px; border-radius: 3px; background: var(--line); }
+.steps span.on { background: var(--blue); }
+
+.screen { padding-top: 20px; display: grid; gap: 18px; }
+.eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .12em; color: var(--blue); text-transform: uppercase; }
+.lead { color: var(--muted); margin: 6px 0 0; }
+.hero h1 { font-size: 34px; line-height: 1.15; color: var(--navy); }
+.hero h1 em { font-style: normal; color: var(--orange); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+.section-title { font-family: var(--font-display); font-size: 19px; margin-bottom: 10px; color: var(--navy); }
+.hint { font-size: 13px; color: var(--muted); margin: -4px 0 10px; }
+
+/* MBTI axis toggles */
+.axis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.axis + .axis { margin-top: 8px; }
+.opt { border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 12px; text-align: left; cursor: pointer; min-height: 56px; display: grid; gap: 2px; }
+.opt b { font-size: 18px; font-family: var(--font-display); font-weight: 400; color: var(--navy); }
+.opt span { font-size: 12px; color: var(--muted); }
+.opt[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-soft); }
+.linkbtn { background: none; border: 0; color: var(--blue); font-weight: 600; padding: 8px 0 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+.quiz { display: grid; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.quiz p { margin: 0 0 6px; font-weight: 600; }
+
+/* chips */
+.chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.chips.two { grid-template-columns: repeat(2, 1fr); }
+.chips.four { grid-template-columns: repeat(4, 1fr); }
+.chip { border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 6px; cursor: pointer; display: grid; justify-items: center; gap: 4px; font-size: 13px; font-weight: 600; min-height: 48px; align-content: center; text-align: center; }
+.chip svg { width: 22px; height: 22px; stroke: var(--muted); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.chip[aria-pressed="true"] { border-color: var(--blue); background: var(--blue-soft); color: var(--navy); }
+.chip[aria-pressed="true"] svg { stroke: var(--blue); }
+.chip small { font-weight: 400; font-size: 11px; color: var(--muted); }
+.field + .field { margin-top: 16px; }
+.field label.lbl { display: block; font-weight: 800; font-size: 13px; margin-bottom: 8px; }
+
+/* bottom action bar */
+.actionbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--surface); border-top: 1px solid var(--line); padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+.actionbar .inner { max-width: 448px; margin: 0 auto; display: flex; gap: 8px; }
+.btn { flex: 1; border: 0; border-radius: 12px; padding: 14px; font-weight: 800; cursor: pointer; background: var(--navy); color: var(--surface); }
+.btn.ghost { flex: 0 0 auto; background: var(--blue-soft); color: var(--navy); padding-inline: 14px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* intro example */
+.sample { display: grid; gap: 10px; }
+.sample .tag { justify-self: start; font-size: 11px; font-weight: 800; letter-spacing: .08em; background: var(--orange-soft); color: var(--orange); padding: 3px 8px; border-radius: 6px; }
+.flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 10px; font-size: 13px; min-width: 0; }
+.flow b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 15px; color: var(--navy); }
+.flow .n { font-size: 11px; font-weight: 800; color: var(--blue); letter-spacing: .1em; }
+
+/* result */
+.typecard { border-radius: var(--radius); padding: 18px; color: var(--surface); background: var(--tc, var(--navy)); display: grid; gap: 6px; }
+.typecard .code { font-family: var(--font-display); font-size: 46px; line-height: 1; }
+.typecard .nm { font-weight: 800; }
+.typecard p { margin: 0; opacity: .92; font-size: 14px; }
+.plog { display: grid; gap: 10px; }
+.scale { position: relative; height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--orange), var(--blue), var(--green)); }
+.scale i { position: absolute; top: 50%; width: 18px; height: 18px; border-radius: 50%; background: var(--surface); border: 3px solid var(--navy); transform: translate(-50%, -50%); }
+.scale-l { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+.route { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.daylabel { font-family: var(--font-display); font-size: 16px; color: var(--orange); padding: 6px 0 8px; }
+.stop { display: grid; grid-template-columns: 34px 1fr; gap: 12px; position: relative; padding-bottom: 14px; }
+.stop::before { content: ""; position: absolute; left: 16px; top: 34px; bottom: 0; width: 2px; background: var(--line); }
+.stop:last-child::before { display: none; }
+.num { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; background: var(--blue-soft); color: var(--navy); font-variant-numeric: tabular-nums; }
+.stop.biz .num { background: var(--orange-soft); color: var(--orange); }
+.stop .body { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-width: 0; }
+.stop .kind { font-size: 11px; font-weight: 800; letter-spacing: .06em; color: var(--blue); text-transform: uppercase; }
+.stop.biz .kind { color: var(--orange); }
+.stop h3 { font-size: 18px; margin: 2px 0 0; }
+.stop .ko { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.stop p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.stop .note { margin-top: 6px; font-size: 12px; color: var(--orange); font-weight: 600; }
+.stop .why { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+.pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); color: var(--muted); }
+.maplink { display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 700; color: var(--blue); }
+
+.values { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.val { border-radius: 12px; padding: 10px 12px; background: var(--green-soft); }
+.val b { display: block; font-size: 12px; letter-spacing: .06em; color: var(--green); }
+.val span { font-size: 13px; }
+.val.off { background: var(--bg); opacity: .55; }
+
+.mission { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.mission:first-of-type { border-top: 0; }
+.mission input { width: 22px; height: 22px; accent-color: var(--blue); flex: 0 0 auto; }
+.mission label { flex: 1; font-size: 14px; }
+.mission .pt { font-weight: 800; color: var(--orange); font-variant-numeric: tabular-nums; }
+.points { display: flex; justify-content: space-between; align-items: baseline; }
+.points strong { font-family: var(--font-display); font-weight: 400; font-size: 30px; color: var(--orange); font-variant-numeric: tabular-nums; }
+.foot { font-size: 12px; color: var(--muted); text-align: center; }
+.toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--navy); color: var(--surface); padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 9; }
+.copybox { width: 100%; min-height: 120px; font: 13px/1.5 var(--font-body); background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+@media (prefers-reduced-motion: no-preference) {
+  .screen { animation: rise .25s ease-out; }
+  @keyframes rise { from { transform: translateY(6px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+@media (max-width: 360px) { .chips.four { grid-template-columns: repeat(2, 1fr); } .hero h1 { font-size: 29px; } }
+</style>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span class="logo"><img src="assets/bucheon-mbti-travel-logo2.png" alt="BUCHEON MBTI TRAVELERS"></span><small>Follow your personality, travel Bucheon</small></div>
+    <div class="tools">
+      <a class="lang" href="index.html" lang="ko" hreflang="ko">한국어</a>
+      <div class="steps" aria-label="Progress"><span id="st1"></span><span id="st2"></span><span id="st3"></span></div>
+    </div>
+  </header>
+  <main id="view"></main>
+</div>
+<div class="actionbar"><div class="inner" id="actions"></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+document.documentElement.lang = 'en';
+// ---------- Data (based on the "BUCHEON MBTI TRAVEL" case report) ----------
+const ICON = {
+  nature: '<path d="M12 3l6 9h-4l4 6H6l4-6H6z"/><path d="M12 18v3"/>',
+  culture: '<circle cx="12" cy="12" r="8"/><circle cx="9" cy="10" r="1"/><circle cx="14" cy="9" r="1"/><circle cx="15" cy="13" r="1"/>',
+  food: '<path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M16 3c-2 2-2 6 0 8v10"/>',
+  activity: '<circle cx="13" cy="4" r="2"/><path d="M9 21l3-7 3 3v4M7 12l3-4 4 1 3 3"/>',
+  photo: '<rect x="3" y="7" width="18" height="13" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M8 7l2-3h4l2 3"/>',
+  history: '<path d="M3 10l9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/>',
+  family: '<circle cx="8" cy="6" r="2.5"/><circle cx="16" cy="6" r="2.5"/><path d="M4 21v-6a4 4 0 018 0v6M12 21v-6a4 4 0 018 0v6"/>',
+  healing: '<path d="M12 21c-5-3-8-7-8-11a8 8 0 0116 0c0 4-3 8-8 11z"/><path d="M12 8v8M9 12h6"/>',
+  new: '<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>'
+};
+const INTERESTS = [
+  ['nature','Nature'],['culture','Arts & culture'],['food','Food'],
+  ['activity','Activities'],['photo','Photos'],['history','History'],
+  ['family','Family'],['healing','Relaxing'],['new','Something new']
+];
+const VALUES = {
+  green:   ['GREEN VALUE','Eco-friendly travel & protecting nature'],
+  local:   ['LOCAL VALUE','Supporting local shops & the local economy'],
+  culture: ['CULTURE VALUE','Arts experiences & preserving local culture'],
+  social:  ['SOCIAL VALUE','Joining in & connecting with the community']
+};
+// kind: spot / food / cafe / market. adv: 1 (comfort-seeking) ~ 5 (adventure-seeking)
+// ko: Korean name shown under the English name and used for map search
+const PLACES = {
+  gogang:      {name:'Gogang Prehistoric Site Park', ko:'고강선사유적공원', kind:'spot', tags:['history','nature'], adv:3, values:['culture','green'], desc:'Walk among prehistoric remains and meet the oldest chapter of Bucheon’s history.'},
+  museum:      {name:'Bucheon City Museum', ko:'부천시립박물관', kind:'spot', tags:['history','culture','family'], adv:2, values:['culture'], desc:'See Bucheon’s history and everyday culture all in one place.'},
+  historyexp:  {name:'History & Culture Experience Center', ko:'역사문화체험관', kind:'spot', tags:['history','activity','family'], adv:2, values:['culture'], desc:'Don’t just look and listen — try history with your own hands.', q:'부천 역사문화체험'},
+  hanok:       {name:'Bucheon Hanok Village', ko:'부천 한옥체험마을', kind:'spot', tags:['history','culture','photo'], adv:2, values:['culture'], desc:'Feel traditional Korean culture inside a hanok house.'},
+  sangdong:    {name:'Sangdong Lake Park', ko:'상동호수공원', kind:'spot', tags:['nature','healing','photo','family'], adv:1, values:['green'], desc:'An easygoing walk around the lake.'},
+  suppia:      {name:'Suppia Forest Garden', ko:'수피아', kind:'spot', tags:['nature','healing'], adv:2, values:['green'], desc:'A quiet break among trees and gardens.', q:'부천 수피아'},
+  ecopark:     {name:'Bucheon Nature & Ecology Park', ko:'부천자연생태공원', kind:'spot', tags:['nature','healing','family'], adv:2, values:['green'], desc:'Observe nature and wildlife up close.'},
+  botanical:   {name:'Bucheon Botanical Garden', ko:'부천식물원', kind:'spot', tags:['nature','photo','healing'], adv:1, values:['green'], desc:'An indoor garden that stays green in every season.'},
+  rose:        {name:'Million Roses Garden', ko:'백만송이장미원', kind:'spot', tags:['photo','nature'], adv:2, values:['green'], desc:'A photo spot to capture pretty moments in the rose garden.', note:'Best visited when the roses are in bloom', q:'부천 백만송이장미원'},
+  simgok:      {name:'Simgokcheon Stream', ko:'심곡천', kind:'spot', tags:['nature','healing'], adv:3, values:['green'], desc:'A walking path along a stream in the middle of the city.', q:'부천 심곡천'},
+  wonmi:       {name:'Wonmisan Azalea Hill', ko:'원미산 진달래동산', kind:'spot', tags:['nature','photo'], adv:3, values:['green'], desc:'A hill that turns pink with azaleas every spring.', note:'Recommended during azalea season in spring'},
+  artcenter:   {name:'Bucheon Arts Center', ko:'부천아트센터', kind:'spot', tags:['culture'], adv:2, values:['culture'], desc:'A cultural space for performances and the arts.'},
+  culturefdn:  {name:'Bucheon Cultural Foundation', ko:'부천문화재단', kind:'spot', tags:['culture'], adv:3, values:['culture','social'], desc:'Find local culture programs and events, and join in.', note:'Check current programs before you visit'},
+  boksagol:    {name:'Boksagol Culture Center', ko:'복사골문화센터', kind:'spot', tags:['culture'], adv:2, values:['culture','social'], desc:'A culture space shared with local residents.', q:'부천 복사골문화센터'},
+  civic:       {name:'Bucheon Civic Hall', ko:'부천시민회관', kind:'spot', tags:['culture','family'], adv:2, values:['social','culture'], desc:'Mingle with locals at shows and events.'},
+  bifan:       {name:'Bucheon International Fantastic Film Festival (BIFAN)', ko:'부천국제판타스틱영화제', kind:'spot', tags:['culture','new'], adv:4, values:['social','culture'], desc:'Meet films and people at Bucheon’s signature festival.', note:'Only available during the festival period'},
+  b39:         {name:'Bucheon Art Bunker B39', ko:'부천아트벙커 B39', kind:'spot', tags:['culture','new','photo'], adv:4, values:['culture','green'], desc:'A one-of-a-kind cultural complex built in a converted industrial facility.'},
+  webtoon:     {name:'Webtoon Convergence Center', ko:'웹툰융합센터', kind:'spot', tags:['culture','new'], adv:4, values:['culture'], desc:'Peek into webtoon content and where it is created.', q:'부천 웹툰융합센터'},
+  vr:          {name:'VR Experience Center', ko:'VR체험관', kind:'spot', tags:['new','activity'], adv:5, values:[], desc:'Take on something different in virtual reality.', q:'부천 VR체험'},
+  manhwa:      {name:'Korea Manhwa Museum', ko:'한국만화박물관', kind:'spot', tags:['culture','family','new'], adv:3, values:['culture'], desc:'Step into the world of Korean comics and animation.'},
+  library:     {name:'Bucheon Public Library', ko:'부천시립도서관', kind:'spot', tags:['culture','healing'], adv:1, values:['culture','social'], desc:'Quiet time to stay a while and explore new knowledge.'},
+  robopark:    {name:'Bucheon Robo Park', ko:'부천로보파크', kind:'spot', tags:['new','activity','family'], adv:4, values:['culture'], desc:'See and touch robots and discover something new.'},
+  playdoci:    {name:'Woongjin Playdoci', ko:'웅진플레이도시', kind:'spot', tags:['activity','family'], adv:2, values:[], desc:'Water play and leisure activities in one place.', paid:true},
+  leports:     {name:'Bucheon Leports Park', ko:'부천레포츠공원', kind:'spot', tags:['activity','nature'], adv:3, values:['green'], desc:'An outdoor sports park to get moving.'},
+  indoorsports:{name:'Indoor Sports Center', ko:'실내스포츠센터', kind:'spot', tags:['activity'], adv:3, values:[], desc:'Indoor sports, rain or shine.', q:'부천 실내스포츠'},
+  // Local businesses
+  jungang:     {name:'Bucheon Central Park Food Street', ko:'부천중앙공원 맛집거리', kind:'food', tags:['food'], adv:2, values:['local'], desc:'Taste Bucheon at local restaurants.', q:'부천중앙공원 맛집'},
+  stationfood: {name:'Bucheon Station Food Alleys', ko:'부천역 일대 맛집', kind:'food', tags:['food','new'], adv:3, values:['local'], desc:'Explore restaurants in the lively alleys around the station.', q:'부천역 맛집'},
+  jeil:        {name:'Bucheon Jeil Market', ko:'부천제일시장', kind:'market', tags:['food','history'], adv:3, values:['local','social'], desc:'Meet local food and merchants at a traditional market.'},
+  sangdongcafe:{name:'Sangdong-ro Café Street', ko:'상동로 카페거리', kind:'cafe', tags:['food','photo','healing'], adv:2, values:['local'], desc:'Relax at cozy local cafés.', q:'부천 상동 카페거리'},
+  stationcafe: {name:'Bucheon Station Café Street', ko:'부천역 카페거리', kind:'cafe', tags:['food','photo'], adv:3, values:['local'], desc:'Take a break at unique cafés near the station.', q:'부천역 카페'}
+};
+const KIND = {spot:'Attraction', food:'Local restaurant', cafe:'Local café', market:'Traditional market'};
+// 14 types from the case report + ESTJ·ESFJ (filled in with similar personalities)
+const TYPES = {
+  ISTJ:{nm:'History Explorer', tt:'Discover Bucheon’s history', pl:['gogang','museum','historyexp']},
+  ISFJ:{nm:'Calm & Healing', tt:'A quiet, restful trip', pl:['sangdong','suppia','ecopark']},
+  INFJ:{nm:'Arts & Culture', tt:'A trip filled with art', pl:['artcenter','culturefdn','boksagol']},
+  INTJ:{nm:'Unique & Special', tt:'In search of new experiences', pl:['b39','webtoon','vr']},
+  ISTP:{nm:'Activity Lover', tt:'Hands-on adventures', pl:['playdoci','leports','indoorsports']},
+  ISFP:{nm:'Mood & Photos', tt:'Capturing pretty moments', pl:['rose','sangdong','botanical']},
+  INFP:{nm:'Nature & Art', tt:'Finding your own mood', pl:['ecopark','suppia','simgok']},
+  INTP:{nm:'Knowledge Seeker', tt:'Exploring new ideas', pl:['manhwa','library','webtoon']},
+  ESTP:{nm:'Action & Experience', tt:'Enjoy it now', pl:['playdoci','leports','indoorsports']},
+  ESFP:{nm:'Food & Shopping', tt:'A tasty, fun trip', pl:['jungang','sangdongcafe','jeil']},
+  ENFP:{nm:'Culture Explorer', tt:'Experiencing many cultures', pl:['manhwa','sangdong','artcenter']},
+  ENFJ:{nm:'People & Connection', tt:'A trip to share', pl:['civic','artcenter','bifan']},
+  ENTJ:{nm:'Challenger & Leader', tt:'A trip with a goal', pl:['b39','manhwa','webtoon']},
+  ENTP:{nm:'Creative Discoverer', tt:'Off to find something new', pl:['robopark','manhwa','stationfood']},
+  ESTJ:{nm:'Planner & Practical', tt:'A well-organized trip', pl:['museum','manhwa','jeil'], extra:true},
+  ESFJ:{nm:'Together & Family', tt:'A trip everyone enjoys', pl:['sangdong','civic','jungang'], extra:true}
+};
+const PLOG = [
+  null,
+  ['Psychocentric','Comfort-seeking','You prefer familiar, comfortable and safe places with good facilities.'],
+  ['Near-Psychocentric','Mostly comfort-seeking','You like familiar settings and convenience, but enjoy something new now and then.'],
+  ['Mid-centric','Balanced','You look for a mix of novelty and rest — the type most travelers belong to.'],
+  ['Near-Allocentric','Mostly adventure-seeking','You seek some adventure and new experiences while still valuing safety and convenience.'],
+  ['Allocentric','Adventure-seeking','You enjoy free-spirited trips to lesser-known places and connecting with local culture.']
+];
+const MISSIONS = [
+  {id:'m1', v:'green',   t:'Get around by public transport, on foot or by bike', p:100},
+  {id:'m2', v:'green',   t:'Use a tumbler or reusable cup', p:50},
+  {id:'m3', v:'local',   t:'Visit a local restaurant, café or market on your route', p:100},
+  {id:'m4', v:'culture', t:'Join an exhibition, performance or hands-on program', p:100},
+  {id:'m5', v:'social',  t:'Share your trip review #BucheonMBTITravel #부천MBTI여행', p:50}
+];
+const QUIZ = [
+  ['Chatting with someone you just met on a trip is…', ['E','Fun and exciting'], ['I','A little tiring']],
+  ['When choosing where to go, you’re drawn to…', ['S','Places with solid reviews and photos'], ['N','Places with a mood and a story']],
+  ['When planning a route, what matters more?', ['T','An efficient route'], ['F','How everyone with you feels']],
+  ['Your travel schedule is…', ['J','Planned in advance'], ['P','Decided as you go']]
+];
+const TIME_LABEL = {'2h':'2 hours','half':'Half day','day':'1 day','two':'2 days, 1 night'};
+
+// ---------- State ----------
+const S = { step: 0, mbti: {EI:null, SN:null, TF:null, JP:null}, quiz: false, interests: [], who: 'friends', time: 'day', move: 'transit', budget: 'mid', values: ['green','local'], seed: 0, done: {} };
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem('bmt_' + k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem('bmt_' + k, JSON.stringify(v)); } catch (e) {} }
+};
+S.done = store.get('done') || {};
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mbtiCode = () => (S.mbti.EI||'') + (S.mbti.SN||'') + (S.mbti.TF||'') + (S.mbti.JP||'');
+const mbtiReady = () => mbtiCode().length === 4;
+const group = c => c[1]==='N' ? (c[2]==='T' ? 'nt' : 'nf') : (c[3]==='J' ? 'sj' : 'sp');
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 1800); }
+
+// ---------- Recommendation logic (same as the Korean page) ----------
+function plogLevel() {
+  const c = mbtiCode(); let s = 0;
+  if (c[0]==='E') s++; if (c[1]==='N') s++; if (c[3]==='P') s++;
+  if (S.interests.includes('new')) s++; if (S.interests.includes('activity')) s++;
+  if (S.interests.includes('healing')) s--; if (S.interests.includes('family')) s--;
+  if (S.who==='family') s--; if (S.move==='walk' || S.move==='bike') s++;
+  if (s <= -1) return 1; if (s <= 0) return 2; if (s <= 2) return 3; if (s === 3) return 4; return 5;
+}
+function rng(seed) { let x = seed * 9301 + 49297; return () => ((x = (x * 9301 + 49297) % 233280) / 233280); }
+function scorePlace(id, p, type, lvl, rand) {
+  let s = 0; const why = [];
+  if (type.pl.includes(id)) { s += 6; why.push('Top pick for ' + mbtiCode()); }
+  const hit = p.tags.filter(t => S.interests.includes(t));
+  s += hit.length * 2.5;
+  hit.forEach(t => why.push(INTERESTS.find(i => i[0]===t)[1]));
+  const vh = p.values.filter(v => S.values.includes(v));
+  s += vh.length * 1.5;
+  s -= Math.abs(p.adv - lvl) * 0.8;
+  if (S.who==='family') { if (p.tags.includes('family')) { s += 2; why.push('Family trip'); } if (p.adv >= 5) s -= 1.5; }
+  if ((S.who==='couple' || S.who==='solo') && (p.tags.includes('photo') || p.tags.includes('healing'))) s += 1;
+  if (S.who==='friends' && p.tags.includes('activity')) s += 1;
+  if (S.budget==='low' && p.paid) s -= 3;
+  if (S.budget==='high' && p.paid) s += 1;
+  if ((S.move==='walk' || S.move==='bike') && p.tags.includes('nature')) s += 1;
+  s += rand() * (S.seed ? 2.5 : 0.01);
+  return {id, s, why: [...new Set(why)].slice(0, 3)};
+}
+const PLAN = {
+  '2h':  [['spot','cafe']],
+  half:  [['spot','food','spot']],
+  day:   [['spot','food','spot','cafe','spot']],
+  two:   [['spot','food','spot','cafe','spot'], ['spot','market','spot']]
+};
+function buildCourse() {
+  const type = TYPES[mbtiCode()], lvl = plogLevel(), rand = rng(S.seed + 1);
+  const ranked = Object.entries(PLACES).map(([id, p]) => scorePlace(id, p, type, lvl, rand)).sort((a, b) => b.s - a.s);
+  const used = new Set();
+  const pick = kinds => { const r = ranked.find(x => kinds.includes(PLACES[x.id].kind) && !used.has(x.id)); if (r) used.add(r.id); return r; };
+  let plan = PLAN[S.time].map(d => d.slice());
+  if (S.interests.includes('food') && S.time==='day') plan[0].push('market');
+  return plan.map(day => day.map(k => {
+    const kinds = k==='spot' ? ['spot'] : k==='market' ? ['market','food'] : k==='food' ? ['food','market'] : ['cafe'];
+    return pick(kinds);
+  }).filter(Boolean));
+}
+
+// ---------- Screens ----------
+function setActions(html) { $('#actions').innerHTML = html; }
+function setSteps() { [1,2,3].forEach(i => $('#st'+i).className = S.step >= i ? 'on' : ''); }
+function chip(group, val, label, on, icon) {
+  return `<button class="chip" data-g="${group}" data-v="${val}" aria-pressed="${on}">${icon ? `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[icon]}</svg>` : ''}${label}</button>`;
+}
+
+function renderIntro() {
+  $('#view').innerHTML = `
+  <section class="screen">
+    <div class="hero">
+      <div class="eyebrow">Bucheon · MBTI × Travel style</div>
+      <h1>Your personality becomes<br>your own <em>Bucheon trip</em></h1>
+      <p class="lead">Tell us your MBTI and travel tastes, and we’ll connect Bucheon’s attractions with local restaurants, cafés and markets into one route.</p>
+    </div>
+    <div class="flow">
+      <div><span class="n">STEP 1</span><b>Your travel style</b>MBTI & interests</div>
+      <div><span class="n">STEP 2</span><b>Trip details</b>Group, time, transport</div>
+      <div><span class="n">STEP 3</span><b>Your route</b>Sights + local shops</div>
+    </div>
+    <div class="card sample">
+      <span class="tag">SAMPLE RESULT</span>
+      <div class="typecard" style="--tc: var(--t-nt)"><span class="code">INTJ</span><span class="nm">Unique & Special · In search of new experiences</span><p>Bucheon Art Bunker B39 → Local restaurant → Webtoon Convergence Center → Local café → VR Experience Center</p></div>
+    </div>
+    <p class="foot">Also reflects Stanley C. Plog’s classification of tourist types.</p>
+  </section>`;
+  setActions(`<button class="btn" id="go">Find my travel style</button>`);
+  $('#go').onclick = () => go(1);
+}
+
+function renderStep1() {
+  const ax = (k, a, b) => `<div class="axis">
+      <button class="opt" data-ax="${k}" data-v="${a[0]}" aria-pressed="${S.mbti[k]===a[0]}"><b>${a[0]}</b><span>${a[1]}</span></button>
+      <button class="opt" data-ax="${k}" data-v="${b[0]}" aria-pressed="${S.mbti[k]===b[0]}"><b>${b[0]}</b><span>${b[1]}</span></button></div>`;
+  $('#view').innerHTML = `
+  <section class="screen">
+    <div><div class="eyebrow">Step 1</div><h2 class="section-title" style="font-size:26px">Find your travel style</h2></div>
+    <div class="card">
+      <div class="section-title">Your MBTI</div>
+      ${ax('EI',['E','Extraversion'],['I','Introversion'])}${ax('SN',['S','Sensing'],['N','Intuition'])}${ax('TF',['T','Thinking'],['F','Feeling'])}${ax('JP',['J','Judging'],['P','Perceiving'])}
+      <button class="linkbtn" id="qtoggle">${S.quiz ? 'Close quick test' : 'Not sure of your MBTI? · 4-question test'}</button>
+      <div class="quiz" ${S.quiz ? '' : 'hidden'}>
+        ${QUIZ.map((q, i) => `<div><p>${i+1}. ${q[0]}</p><div class="axis">
+          <button class="opt" data-ax="${['EI','SN','TF','JP'][i]}" data-v="${q[1][0]}" aria-pressed="${S.mbti[['EI','SN','TF','JP'][i]]===q[1][0]}"><span style="font-size:13px;color:var(--fg)">${q[1][1]}</span></button>
+          <button class="opt" data-ax="${['EI','SN','TF','JP'][i]}" data-v="${q[2][0]}" aria-pressed="${S.mbti[['EI','SN','TF','JP'][i]]===q[2][0]}"><span style="font-size:13px;color:var(--fg)">${q[2][1]}</span></button></div></div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">What matters most when you travel?</div>
+      <p class="hint">Choose up to 3</p>
+      <div class="chips">${INTERESTS.map(([k, l]) => chip('int', k, l, S.interests.includes(k), k)).join('')}</div>
+    </div>
+  </section>`;
+  document.querySelectorAll('.opt').forEach(b => b.onclick = () => { S.mbti[b.dataset.ax] = b.dataset.v; renderStep1(); });
+  $('#qtoggle').onclick = () => { S.quiz = !S.quiz; renderStep1(); };
+  document.querySelectorAll('[data-g="int"]').forEach(b => b.onclick = () => {
+    const v = b.dataset.v, i = S.interests.indexOf(v);
+    if (i >= 0) S.interests.splice(i, 1);
+    else if (S.interests.length >= 3) return toast('You can choose up to 3 interests');
+    else S.interests.push(v);
+    renderStep1();
+  });
+  const ok = mbtiReady() && S.interests.length > 0;
+  setActions(`<button class="btn ghost" id="back">Back</button><button class="btn" id="next" ${ok ? '' : 'disabled'}>${mbtiReady() ? mbtiCode() + ' · ' : ''}Next</button>`);
+  $('#back').onclick = () => go(0);
+  $('#next').onclick = () => go(2);
+}
+
+function renderStep2() {
+  const row = (g, cls, opts, cur) => `<div class="chips ${cls}">${opts.map(([v, l]) => chip(g, v, l, cur===v)).join('')}</div>`;
+  $('#view').innerHTML = `
+  <section class="screen">
+    <div><div class="eyebrow">Step 2</div><h2 class="section-title" style="font-size:26px">Trip details</h2></div>
+    <div class="card">
+      <div class="field"><label class="lbl">Who’s going</label>${row('who','four',[['solo','Solo'],['couple','Couple'],['friends','Friends'],['family','Family']], S.who)}</div>
+      <div class="field"><label class="lbl">How long</label>${row('time','four',[['2h','2 hours'],['half','Half day'],['day','1 day'],['two','2 days']], S.time)}</div>
+      <div class="field"><label class="lbl">Getting around</label>${row('move','four',[['transit','Public transport'],['walk','Walking'],['bike','Bike'],['car','Car']], S.move)}</div>
+      <div class="field"><label class="lbl">Budget</label>${row('budget','',[['low','Low'],['mid','Medium'],['high','Flexible']], S.budget)}</div>
+    </div>
+    <div class="card">
+      <div class="section-title">Value to add on this trip</div>
+      <p class="hint">We’ll put places and missions that match your values first</p>
+      <div class="chips two">${Object.entries(VALUES).map(([k, v]) => `<button class="chip" data-g="val" data-v="${k}" aria-pressed="${S.values.includes(k)}">${v[0]}<small>${v[1]}</small></button>`).join('')}</div>
+    </div>
+  </section>`;
+  document.querySelectorAll('.chip[data-g]').forEach(b => b.onclick = () => {
+    const g = b.dataset.g, v = b.dataset.v;
+    if (g === 'val') { const i = S.values.indexOf(v); i >= 0 ? S.values.splice(i, 1) : S.values.push(v); }
+    else S[g] = v;
+    renderStep2();
+  });
+  setActions(`<button class="btn ghost" id="back">Back</button><button class="btn" id="next">See my route</button>`);
+  $('#back').onclick = () => go(1);
+  $('#next').onclick = () => { S.seed = 0; go(3); };
+}
+
+const WHO_LABEL = {solo:'Solo', couple:'Couple', friends:'Friends', family:'Family'};
+const MOVE_LABEL = {transit:'Public transport', walk:'Walking', bike:'Bike', car:'Car'};
+const BUDGET_LABEL = {low:'Low', mid:'Medium', high:'Flexible'};
+
+function courseText(code, type, days) {
+  const lines = [`[BUCHEON MBTI TRAVELERS] ${code} ${type.nm} - ${type.tt}`];
+  days.forEach((d, di) => {
+    if (days.length > 1) lines.push(`Day ${di+1}`);
+    d.forEach((x, i) => lines.push(`${i+1}. ${PLACES[x.id].name} (${PLACES[x.id].ko}) - ${KIND[PLACES[x.id].kind]}`));
+  });
+  lines.push('A trip that suits me, a new value for the region. #BucheonMBTITravel #부천MBTI여행');
+  return lines.join('\n');
+}
+
+function renderResult() {
+  const code = mbtiCode(), type = TYPES[code], lvl = plogLevel(), pg = PLOG[lvl];
+  const days = buildCourse();
+  const courseVals = new Set(); days.flat().forEach(x => PLACES[x.id].values.forEach(v => courseVals.add(v)));
+  if (S.move !== 'car') courseVals.add('green');
+  const missions = MISSIONS.filter(m => S.values.includes(m.v) || courseVals.has(m.v));
+  let n = 0;
+  const stops = days.map((d, di) => `${days.length > 1 ? `<li class="daylabel">Day ${di+1}</li>` : ''}` + d.map(x => {
+    const p = PLACES[x.id], biz = p.kind !== 'spot'; n++;
+    const q = encodeURIComponent(p.q || p.ko);
+    return `<li class="stop ${biz ? 'biz' : ''}"><span class="num">${n}</span><div class="body">
+      <span class="kind">${KIND[p.kind]}</span><h3>${esc(p.name)}</h3><span class="ko" lang="ko">${esc(p.ko)}</span><p>${esc(p.desc)}</p>
+      ${p.note ? `<div class="note">${esc(p.note)}</div>` : ''}
+      ${x.why.length ? `<div class="why">${x.why.map(w => `<span class="pill">${esc(w)}</span>`).join('')}</div>` : ''}
+      <a class="maplink" href="https://map.naver.com/p/search/${q}" target="_blank" rel="noopener">View on map →</a></div></li>`;
+  }).join('')).join('');
+  const total = MISSIONS.reduce((a, m) => a + (S.done[m.id] ? m.p : 0), 0);
+  store.set('last', {code, time: S.time});
+
+  $('#view').innerHTML = `
+  <section class="screen">
+    <div class="typecard" style="--tc: var(--t-${group(code)})">
+      <span class="code">${code}</span>
+      <span class="nm">${type.nm} · ${type.tt}</span>
+      <p>${WHO_LABEL[S.who]} · ${TIME_LABEL[S.time]} · ${MOVE_LABEL[S.move]} · ${BUDGET_LABEL[S.budget]} budget</p>
+      ${type.extra ? '<p style="font-size:12px">This type isn’t one of the 14 types in the case report, so we built your route from places for similar personalities.</p>' : ''}
+    </div>
+    <div class="card plog">
+      <div class="section-title" style="margin:0">Tourist type · ${pg[0]} <span style="font-size:13px;color:var(--muted)">${pg[1]}</span></div>
+      <div class="scale" role="img" aria-label="Plog tourist type scale ${lvl} of 5"><i style="left:${(lvl-1)*25}%"></i></div>
+      <div class="scale-l"><span>Psychocentric</span><span>Mid-centric</span><span>Allocentric</span></div>
+      <p style="margin:0;font-size:14px">${pg[2]}</p>
+    </div>
+    <div>
+      <div class="section-title">Your route</div>
+      <ol class="route">${stops}</ol>
+      <p class="hint" style="margin:0">Please check routes and opening hours on the map before you go. Map links open Naver Map with the Korean name.</p>
+    </div>
+    <div class="card">
+      <div class="section-title">Value this route adds</div>
+      <div class="values">${Object.entries(VALUES).map(([k, v]) => `<div class="val ${courseVals.has(k) ? '' : 'off'}"><b>${v[0]}</b><span>${v[1]}</span></div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="points"><div class="section-title" style="margin:0">TOGETHER POINT</div><strong id="pts">${total}P</strong></div>
+      <p class="hint" style="margin:4px 0 6px">Check off missions as you complete them. Points are for fun and are saved only on this device.</p>
+      ${missions.map(m => `<div class="mission"><input type="checkbox" id="${m.id}" ${S.done[m.id] ? 'checked' : ''}><label for="${m.id}">${m.t}</label><span class="pt">+${m.p}</span></div>`).join('')}
+    </div>
+    <div class="card" id="sharebox" hidden>
+      <div class="section-title">Route text to share</div>
+      <textarea class="copybox" id="copytext" readonly>${esc(courseText(code, type, days))}</textarea>
+    </div>
+    <p class="foot">“A trip that suits me, a new value for the region.”<br>BUCHEON TOGETHER</p>
+  </section>`;
+  missions.forEach(m => $('#' + m.id).onchange = e => {
+    S.done[m.id] = e.target.checked; store.set('done', S.done);
+    $('#pts').textContent = MISSIONS.reduce((a, x) => a + (S.done[x.id] ? x.p : 0), 0) + 'P';
+  });
+  setActions(`<button class="btn ghost" id="again">Restart</button><button class="btn ghost" id="shuffle">Shuffle</button><button class="btn" id="share">Copy route</button>`);
+  $('#again').onclick = () => { S.mbti = {EI:null,SN:null,TF:null,JP:null}; S.interests = []; go(0); };
+  $('#shuffle').onclick = () => { S.seed++; renderResult(); window.scrollTo(0, 0); toast('Here’s a different route'); };
+  $('#share').onclick = () => {
+    const text = courseText(code, type, days), box = $('#sharebox');
+    navigator.clipboard && navigator.clipboard.writeText(text).then(() => toast('Route copied'), () => fallback());
+    if (!navigator.clipboard) fallback();
+    function fallback() { box.hidden = false; const t = $('#copytext'); t.focus(); t.select(); toast('Press and hold the text to copy'); }
+  };
+}
+
+function go(step) {
+  S.step = step; setSteps();
+  [renderIntro, renderStep1, renderStep2, renderResult][step]();
+  window.scrollTo(0, 0);
+}
+go(0);
+</script>

@@ -1,4 +1,4 @@
-<title>Bucheon MBTI Travel</title>
+<title>Bucheon MBTI Travelers</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,8 +49,15 @@ button { font: inherit; color: inherit; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
 
 .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 12px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); margin-inline: -16px; padding-inline: 16px; }
-.brand { font-family: var(--font-display); font-size: 20px; color: var(--navy); line-height: 1; }
-.brand small { display: block; font-family: var(--font-body); font-size: 11px; color: var(--muted); letter-spacing: .08em; margin-top: 4px; }
+.brand { display: grid; gap: 4px; min-width: 0; }
+/* 로고 원본(2171x724)의 바깥 흰 여백을 잘라 글자 부분만 보이게 한다 */
+.brand .logo { display: block; width: 166px; height: 50px; overflow: hidden; border-radius: 6px; }
+.brand .logo img { display: block; width: 200px; height: auto; margin: -8px 0 0 -18px; }
+.brand small { display: block; font-size: 11.5px; font-weight: 600; color: var(--muted); letter-spacing: .02em; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand .logo { background: #fff; } }
+:root[data-theme="dark"] .brand .logo { background: #fff; }
+.tools { display: grid; justify-items: end; gap: 8px; }
+.lang { font-size: 12px; font-weight: 800; color: var(--blue); text-decoration: none; border: 1.5px solid var(--line); border-radius: 999px; padding: 3px 10px; background: var(--surface); }
 .steps { display: flex; gap: 6px; }
 .steps span { width: 26px; height: 6px; border-radius: 3px; background: var(--line); }
 .steps span.on { background: var(--blue); }
@@ -156,8 +163,11 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 
 <div class="app">
   <header class="topbar">
-    <div class="brand">BUCHEON MBTI TRAVEL<small>나에게 맞는 여행, 지역에 가치를 더하는 여행</small></div>
-    <div class="steps" aria-label="진행 단계"><span id="st1"></span><span id="st2"></span><span id="st3"></span></div>
+    <div class="brand"><span class="logo"><img src="assets/bucheon-mbti-travel-logo2.png" alt="BUCHEON MBTI TRAVELERS"></span><small>나의 성향을 따라, 부천을 여행하다</small></div>
+    <div class="tools">
+      <a class="lang" href="index-en.html" lang="en" hreflang="en">English</a>
+      <div class="steps" aria-label="진행 단계"><span id="st1"></span><span id="st2"></span><span id="st3"></span></div>
+    </div>
   </header>
   <main id="view"></main>
 </div>
@@ -349,7 +359,7 @@ function renderIntro() {
     </div>
     <div class="card sample">
       <span class="tag">예시 결과</span>
-      <div class="typecard" style="--tc: var(--t-nf)"><span class="code">ENFP</span><span class="nm">문화탐험형 · 다양한 문화를 경험하는 여행</span><p>한국만화박물관 → 지역 음식점 → 상동호수공원 → 지역 카페 → 부천아트센터</p></div>
+      <div class="typecard" style="--tc: var(--t-nt)"><span class="code">INTJ</span><span class="nm">이색·특별형 · 새로운 경험을 찾는 여행</span><p>부천아트벙커 B39 → 지역 음식점 → 웹툰융합센터 → 지역 카페 → VR체험관</p></div>
     </div>
     <p class="foot">스탠리 플로그(Stanley C. Plog)의 관광객 유형 분류를 함께 반영합니다.</p>
   </section>`;
